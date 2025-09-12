@@ -1,0 +1,144 @@
+
+:root {
+    --theme-primary-color: #0000Cd;--theme-secondary-color: #00008B;
+    --base-font-family: "Roboto", Arial, Helvetica, sans-serif;
+}
+.search-overlay{height:100%;width:100%;display:none;position:fixed;z-index:1000;top:0;left:0;background-color:white;background-color:white;}
+.search-overlay .search-closebtn{position:absolute;top:20px;left:45px;font-size:60px;cursor:pointer;color:black;}
+.search-overlay .search-closebtn:hover{color:#ccc;}
+.search-overlay input[type=text]{padding:15px;font-size:17px;border:none;float:left;width:80%;background:white;}
+.search-overlay input[type=text]:hover{background:#f1f1f1;}
+.search-overlay button{float:left;width:20%;padding:15px;background:#ddd;font-size:17px;border:none;cursor:pointer;}
+.search-overlay button:hover{background:#bbb;}
+@media (max-width: 767px) {:root {font-size: 9px; --theme-size: 9px; }}
+body {font: 400 1.6rem/1.5 "Roboto", Arial, Helvetica, sans-serif;}
+input:not([class]),textarea:not([class]),select:not([class]),select.form-control,.ui-input, .ui-range__input, .ui-textarea,.form-control:not(select),.ui-select,.ui-select select,.personal__order-table-info{
+    font-family: "Roboto", Arial, Helvetica, sans-serif;}
+@media (min-width: 768px) {.personal__order-table {font-family: "Roboto", Arial, Helvetica, sans-serif;}}
+@media (max-width: 767px) {.personal__order-table {font-family: "Roboto", Arial, Helvetica, sans-serif;}}
+/* ffcd00 e1b503    */
+.ui-btn.js-btn-preview {display: none;}@media (min-width: 1200px) {
+    .is-header-v5 .header {
+        min-height: 10.6rem;
+    }
+    .is-header-fixed .header__logo {
+        height: 4.8rem;
+    }
+    .is-footer-v4 .footer__subsc-form .ui-subsc .ui-textarea::placeholder, .is-header-v5 .header__search-input::placeholder, .header, .header__catalog-btn, .header__search-btn, .header__search-input, .header__acc-btn, .header__action-btn, .header__cart-btn, .header__acc-btn:hover, .header__action-btn:hover, .header__cart-btn:hover, .ui-btn--primary, .ui-btn--primary:hover, .ui-btn:hover {
+        color: #274646;
+    }
+    .is-header-v5 .header__search-input::placeholder {
+        opacity: 0.5;
+    }
+    .header__search-btn:hover {
+        background: var(--theme-secondary-color);
+    }
+    .header__info-sublink:hover {
+        color: var(--theme-secondary-color);
+    }
+    .header__search-input {
+        background: #fff;
+    }
+}
+@media (max-width: 1199px) {
+    .header__sticky-counter mark, .header__sticky-text, .header__nav-btn svg, .header__call-btn, .header__sticky-icon {
+        color: #274646;
+    }
+    .icon-nav-acc {
+        filter: invert(78%) sepia(100%);
+    }
+    .footer__logo {
+        margin: 1.2rem 0 1.2rem;
+    }
+    .header__logo img {
+        width: unset;
+        color: white;
+    }
+}
+.is-footer-v4 .footer__subsc-form .ui-subsc .ui-input {
+    background: #0000Cd;
+}
+#search-list {
+    width: 100%;
+    min-height: 20px;
+    max-height: 110px;
+    overflow: hidden;
+}
+
+#search-list option {
+    height: 20px;
+    cursor: pointer;
+}
+.search-list-block {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+.footer__subsc-image img {
+    max-width: 100px;
+}
+svg.icon-subsc {
+    filter: invert(78%) sepia(100%);
+}
+.ui-btn--grey, .ui-btn--grey:hover, .ui-btn--primary, .ui-btn--primary:hover {
+    color: #274646;
+}
+.ui-subsc .ui-caption {
+    color: #737475;
+    margin: 0 0 1rem;
+}
+.intro__item-category, .intro__item-info > li, .intro__item-title, .is-footer-v4 .footer__subsc-form .ui-subsc .ui-input {
+    color: #274646;
+}
+.footer__subsc-form .ui-subsc .ui-label {
+    font-size: 2.0rem;
+}
+.products-featured__title {
+    margin: 2rem 0 2rem;
+}
+.blog__nav-link.is-active {
+    color: #000;
+}
+.sku__price-2 {
+    text-align: center;
+    margin: 3rem 0;
+    padding: 0.8rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+    background-color: #ffcd00;
+    display: block;
+    max-width: 160px;
+}
+.contacts__data-phones a, .contacts__data-emails a {
+    font-weight: 500;
+}
+.is-fullwidth .blog__item-info, .article__info, .row-gutter-10 {
+    display: none;
+}
+.header__call-btn, .header__mail {
+    display: inline-block;
+}
+.header__mail {
+    display: inline-block;
+}
+.header__call-btn, .header__mail {
+    line-height: 1.2;
+    font-weight: 500;
+}
+.header__mail a, .header__mail a:hover, .header__sticky-counter{
+    color: #274646;
+}
+.header__mobile .icon-search, .header__mobile .icon-acc, .header__mobile .icon-cart {
+    color:#000;
+}
+.is-footer-v3 .footer__bottom {
+    background: var(--theme-primary-color);
+    color: #302F36;
+}
+.footer__copyright {
+    opacity: 0.6;
+}
+.checkout__step-delivery .ui-check__btn-price {
+    display: none;
+}

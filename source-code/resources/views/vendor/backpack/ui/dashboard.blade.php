@@ -1,0 +1,167 @@
+@extends(backpack_view('blank'))
+@section('content')
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <h1>Отчет по задачам сотрудников</h1>
+    <div class="container" >
+        <label>Выберите дату</label>
+        <input type="text" name="daterange" id="daterange"/>
+        <label for="status">Выберите статус Задачи:</label>
+        <select id="status" name="status">
+
+        </select>
+        <button type="button" class="btn btn-primary" onclick="send()">Создать отчет</button>
+    </div>
+
+    <script >
+        let startDate = '';
+        let endDate = '';
+        $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+            startDate = picker.startDate.format('YYYY-MM-DD');
+            endDate = picker.endDate.format('YYYY-MM-DD');
+        });
+        function send(){
+            var select = document.getElementById('status');
+            $.ajax({
+                url: '/api/create-report',
+                type: 'POST',
+                data: {
+                    startDate: startDate,
+                    endDate: endDate ,
+                    id: select.options[select.selectedIndex].value,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(data) {
+                    const obj = JSON.parse(data);
+                    if(obj.status){
+                        alert('Отчет успешно сформирован!')
+                    }
+                    if(!obj.status){
+                        alert(`Ошибка при формировании отчета: ${obj.error} `)
+                    }
+                    console.log('obj');
+                }
+            });
+        }
+        //
+        reloadData();
+
+        $('input[name="daterange"]').daterangepicker({
+            showDropdowns: true,
+            buttonClasses: 'btn',
+            applyButtonClasses: 'btn-primary',
+            cancelButtonClasses: 'btn-default',
+            showWeekNumbers: true,
+        });
+
+        function reloadData(){
+            $.ajax({
+                url: '/api/get-data',
+                type: 'GET',
+                success: function(data) {
+                    document.getElementById('status').innerHTML = '';
+                    const obj = JSON.parse(data);
+                    var select = document.getElementById('status');
+                    if(obj.statuses.length > 0){
+                        var li = document.createElement('option');
+                        li.value = 0;
+                        var a = document.createElement('a');
+                        $(a).appendTo(li);
+                        $(a).text('Все');
+                        $(li).appendTo(select);
+                    }
+                    for (var key in obj.statuses){
+                        var li = document.createElement('option');
+                        li.value = obj.statuses[key]['id'];
+                        var a = document.createElement('a');
+                        $(a).appendTo(li);
+                        $(a).text(obj.statuses[key]['name']);
+                        $(li).appendTo(select);
+                    }
+                }
+            });
+        }
+
+
+    </script>
+    <style>
+        .table-wrapper {
+            max-height: 200px;
+            overflow: auto;
+            display:inline-block;
+        }
+        .table-earnings {
+            background: #F3F5F6;
+        }
+        .container {
+            margin-bottom: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .card-body {
+            background-color: white;
+        }
+
+        .list-group-item {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .scrollbar-inner {
+            padding-right: 10px;
+        }
+
+        #table-last-edit {
+            width: 100%;
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        #table-last-edit th,
+        #table-last-edit td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+            .card {
+                margin-bottom: 10px;
+            }
+        }
+
+        input[name="daterange"] {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        input[name="daterange"]:hover {
+            border-color: #80bdff;
+        }
+
+        input[name="daterange"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+    </style>
+@endsection
