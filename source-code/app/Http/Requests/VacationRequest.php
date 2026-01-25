@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class TaskRequest extends FormRequest
+class VacationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,29 +27,15 @@ class TaskRequest extends FormRequest
                 'required',
                 'min:3',
                 'max:250',
-                Rule::unique('tasks', 'name')->ignore(request()->id)
+                Rule::unique('settlements', 'name')->ignore(request()->id)
             ],
-            'description' => [
-                'required',
-                'string',
-                'min:2',
-            ],
-            'priority_id' => [
-                'required',
-            ],
-            'author_id' => [
-                'required',
-            ],
-            'executor_id' => [
-                'required',
-            ],
-            'group_id' => [
-                'required',
-            ],
+//            'employee_id' => [
+//                'required',
+//            ],
             'status_id' => [
                 'required',
             ],
-            'date_create' => [
+            'date_start' => [
                 'required',
             ],
             'date_finish' => [

@@ -46,6 +46,16 @@ class Employee extends Authenticatable
         return $this->hasMany(Task::class,'executor_id');
     }
 
+    public function vacation(): HasMany
+    {
+        return $this->hasMany(Vacation::class,'employee_id');
+    }
+
+    public function settlement(): HasMany
+    {
+        return $this->hasMany(Settlement::class,'employee_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -84,7 +94,7 @@ class Employee extends Authenticatable
 
     public function delete()
     {
-        if($this->author_task()->where('author_id',$this->attributes['id'])->exists() || $this->executor_task()->where('executor_id',$this->attributes['id'])->exists()){
+        if($this->author_task()->where('author_id',$this->attributes['id'])->exists() || $this->executor_task()->where('executor_id',$this->attributes['id'])->exists() || $this->vacation()->where('employee_id',$this->attributes['id'])->exists() || $this->settlement()->where('employee_id',$this->attributes['id'])->exists()){
             return false;
         }
         Employee::where('id',$this->attributes['id'])->delete();

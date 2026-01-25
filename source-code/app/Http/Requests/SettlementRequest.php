@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class TaskRequest extends FormRequest
+class SettlementRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,23 +27,15 @@ class TaskRequest extends FormRequest
                 'required',
                 'min:3',
                 'max:250',
-                Rule::unique('tasks', 'name')->ignore(request()->id)
+                Rule::unique('settlements', 'name')->ignore(request()->id)
             ],
-            'description' => [
-                'required',
-                'string',
-                'min:2',
-            ],
-            'priority_id' => [
+            'type_transaction_id' => [
                 'required',
             ],
-            'author_id' => [
+            'employee_id' => [
                 'required',
             ],
-            'executor_id' => [
-                'required',
-            ],
-            'group_id' => [
+            'company_id' => [
                 'required',
             ],
             'status_id' => [
@@ -52,9 +44,9 @@ class TaskRequest extends FormRequest
             'date_create' => [
                 'required',
             ],
-            'date_finish' => [
+            'sum' => [
                 'required',
-            ],
+            ]
         ];
     }
 }

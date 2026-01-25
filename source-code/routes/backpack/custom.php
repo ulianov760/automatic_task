@@ -26,6 +26,15 @@ Route::group(
         Route::crud('priorities', 'PriorityCrudController');
         Route::crud('statuses', 'StatusCrudController');
         Route::crud('tasks', 'TaskCrudController');
+        Route::crud('companies', 'CompanyCrudController');
+        Route::crud('payment-statuses', 'PaymentStatusCrudController');
+        Route::crud('vacation-statuses', 'VacationStatusCrudController');
+        Route::crud('type-transactions', 'TypeTransactionCrudController');
+        Route::crud('settlements', 'SettlementCrudController');
+        Route::crud('vacations', 'VacationCrudController');
+        Route::crud('my-vacations', 'MyVacationCrudController');
+
+
         //Route::redirect('dashboard','/admin');
     }
 );

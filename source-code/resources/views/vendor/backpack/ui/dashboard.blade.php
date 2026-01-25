@@ -4,20 +4,39 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-    <h1>Отчет по задачам сотрудников</h1>
+    <h1>Отчеты</h1>
     <div class="container" >
+        <label for="status">Выберите тип Отчета:</label>
+        <select id="type" name="type">
+            <option value="1">по задачам сотрудников</option>
+            <option value="2">по взаиморасчетам сотрудников</option>
+        </select>
         <label>Выберите дату</label>
         <input type="text" name="daterange" id="daterange"/>
-        <label for="status">Выберите статус Задачи:</label>
-        <select id="status" name="status">
-
+        <label for="status" id="status-label" hidden >Выберите статус Задачи:</label>
+        <select id="status" name="status" hidden>
         </select>
         <button type="button" class="btn btn-primary" onclick="send()">Создать отчет</button>
     </div>
 
     <script >
+        const typeSelect = document.getElementById("type");
+        const statusSelect = document.getElementById("status");
+        const statusLabel = document.getElementById("status-label");
         let startDate = '';
         let endDate = '';
+
+        function updateVisibility() {
+            if (typeSelect.value === "1") {
+                statusLabel.removeAttribute("hidden");
+                statusSelect.removeAttribute("hidden");
+            } else {
+                statusLabel.setAttribute("hidden", "true");
+                statusSelect.setAttribute("hidden", "true");
+            }
+        }
+
+        typeSelect.addEventListener("change", updateVisibility);
         $('#daterange').on('apply.daterangepicker', function(ev, picker) {
             startDate = picker.startDate.format('YYYY-MM-DD');
             endDate = picker.endDate.format('YYYY-MM-DD');
@@ -31,6 +50,7 @@
                     startDate: startDate,
                     endDate: endDate ,
                     id: select.options[select.selectedIndex].value,
+                    type: typeSelect.value,
                     _token: '{{ csrf_token() }}'
                 },
                 success: function(data) {
@@ -41,13 +61,12 @@
                     if(!obj.status){
                         alert(`Ошибка при формировании отчета: ${obj.error} `)
                     }
-                    console.log('obj');
                 }
             });
         }
         //
         reloadData();
-
+        updateVisibility();
         $('input[name="daterange"]').daterangepicker({
             showDropdowns: true,
             buttonClasses: 'btn',
