@@ -27,6 +27,21 @@ class Employee extends Authenticatable
         'team_id',
     ];
 
+    public static function getReport($startDate,$endDate,$id){
+        $employeeQuery = Employee::query();
+        $report = $employeeQuery->select(['id', 'fio'])->withCount([
+                                                                       'executor_task' => function ($query) use ($startDate, $endDate, $id) {
+                                                                           if ($id > 0) {
+                                                                               $query->where('status_id', $id);
+                                                                           }
+                                                                           $query->whereBetween('tasks.date_create', [$startDate, $endDate]);
+                                                                       }
+                                                                   ])
+            ->get();
+        return [$report->sum('executor_task_count'),$report];
+
+    }
+
     public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);

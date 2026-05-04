@@ -54,7 +54,20 @@ class TaskRequest extends FormRequest
             ],
             'date_finish' => [
                 'required',
+                'after_or_equal:date_create',
             ],
+        ];
+    }
+
+    /**
+     * Get the validation messages that apply to the request.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'date_finish.after_or_equal' => 'Дата завершения задачи не может быть меньше даты создания.',
         ];
     }
 }

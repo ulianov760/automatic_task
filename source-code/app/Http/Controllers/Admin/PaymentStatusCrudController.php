@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\Helper;
 use App\Http\Requests\PaymentStatusRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -30,6 +31,11 @@ class PaymentStatusCrudController extends CrudController
         CRUD::setModel(\App\Models\PaymentStatus::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/payment-statuses');
         CRUD::setEntityNameStrings('статус оплаты', 'Статусы оплаты');
+
+        $user = backpack_user();
+        if (!$user->hasRoles([Helper::ADMIN])) {
+            abort(403, 'У вас нет прав для доступа к этому разделу.');
+        }
     }
 
     /**

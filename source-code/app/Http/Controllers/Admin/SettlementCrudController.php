@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\Helper;
 use App\Http\Requests\SettlementRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -30,6 +31,10 @@ class SettlementCrudController extends CrudController
         CRUD::setModel(\App\Models\Settlement::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/settlements');
         CRUD::setEntityNameStrings('взаиморасчет', 'Взаиморасчеты');
+        $user = backpack_user();
+        if (!$user->hasRoles([Helper::ADMIN, Helper::SUPER_MANAGER])) {
+            abort(403, 'У вас нет прав для доступа к этому разделу.');
+        }
     }
 
     /**

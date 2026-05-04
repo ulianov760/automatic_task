@@ -10,6 +10,13 @@
         <select id="type" name="type">
             <option value="1">по задачам сотрудников</option>
             <option value="2">по взаиморасчетам сотрудников</option>
+            <option value="3">по отпускам сотрудников</option>
+        </select>
+        <label for="view">Выберите вид Отчета:</label>
+        <select id="view" name="view">
+            <option value="1">табличный</option>
+            <option value="2">строковый</option>
+            <option value="3" id="diagram" hidden>диаграмма</option>
         </select>
         <label>Выберите дату</label>
         <input type="text" name="daterange" id="daterange"/>
@@ -23,16 +30,50 @@
         const typeSelect = document.getElementById("type");
         const statusSelect = document.getElementById("status");
         const statusLabel = document.getElementById("status-label");
+        const viewSelect = document.getElementById("view");
+        const diagram = document.getElementById('diagram');
         let startDate = '';
         let endDate = '';
+        let statuses = '';
+        let statusesVacation = '';
+        let select = document.getElementById('status');
 
         function updateVisibility() {
             if (typeSelect.value === "1") {
                 statusLabel.removeAttribute("hidden");
                 statusSelect.removeAttribute("hidden");
-            } else {
+                diagram.setAttribute("hidden", "true");
+                select.length = 0;
+                formedSelect(statuses);
+            } else if (typeSelect.value === "2") {
                 statusLabel.setAttribute("hidden", "true");
                 statusSelect.setAttribute("hidden", "true");
+                diagram.removeAttribute("hidden");
+            }else{
+                statusLabel.removeAttribute("hidden");
+                statusSelect.removeAttribute("hidden");
+                diagram.setAttribute("hidden", "true");
+                select.length = 0;
+                formedSelect(statusesVacation);
+            }
+        }
+
+        function formedSelect(object){
+            if(typeSelect.value === "1"){
+                var li = document.createElement('option');
+                li.value = 0;
+                var a = document.createElement('a');
+                $(a).appendTo(li);
+                $(a).text('Все');
+                $(li).appendTo(select);
+            }
+            for (var key in object) {
+                var li = document.createElement('option');
+                li.value = object[key]['id'];
+                var a = document.createElement('a');
+                $(a).appendTo(li);
+                $(a).text(object[key]['name']);
+                $(li).appendTo(select);
             }
         }
 
@@ -51,6 +92,7 @@
                     endDate: endDate ,
                     id: select.options[select.selectedIndex].value,
                     type: typeSelect.value,
+                    view: viewSelect.value,
                     _token: '{{ csrf_token() }}'
                 },
                 success: function(data) {
@@ -73,6 +115,22 @@
             applyButtonClasses: 'btn-primary',
             cancelButtonClasses: 'btn-default',
             showWeekNumbers: true,
+            locale: {
+                format: "DD.MM.YYYY",
+                separator: " - ",
+                applyLabel: "Применить",
+                cancelLabel: "Отмена",
+                fromLabel: "От",
+                toLabel: "До",
+                customRangeLabel: "Свой интервал",
+                weekLabel: "Н",
+                daysOfWeek: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
+                monthNames: [
+                    "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+                    "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+                ],
+                firstDay: 1
+            }
         });
 
         function reloadData(){
@@ -82,22 +140,12 @@
                 success: function(data) {
                     document.getElementById('status').innerHTML = '';
                     const obj = JSON.parse(data);
-                    var select = document.getElementById('status');
-                    if(obj.statuses.length > 0){
-                        var li = document.createElement('option');
-                        li.value = 0;
-                        var a = document.createElement('a');
-                        $(a).appendTo(li);
-                        $(a).text('Все');
-                        $(li).appendTo(select);
+                    if(obj.statusesVacation.length > 0){
+                        statusesVacation = obj.statusesVacation;
                     }
-                    for (var key in obj.statuses){
-                        var li = document.createElement('option');
-                        li.value = obj.statuses[key]['id'];
-                        var a = document.createElement('a');
-                        $(a).appendTo(li);
-                        $(a).text(obj.statuses[key]['name']);
-                        $(li).appendTo(select);
+                    if(obj.statuses.length > 0) {
+                        statuses = obj.statuses;
+                        formedSelect(statuses);
                     }
                 }
             });

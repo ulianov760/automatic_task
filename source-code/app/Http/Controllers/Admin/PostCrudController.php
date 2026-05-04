@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\Helper;
 use App\Http\Requests\PostRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\CRUD\app\Library\Widget;
 
 /**
  * Class PostCrudController
@@ -29,6 +31,12 @@ class PostCrudController extends CrudController
         CRUD::setModel(\App\Models\Post::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/posts');
         CRUD::setEntityNameStrings('должность', 'Должности');
+
+        if (!backpack_user()->hasRoles([Helper::ADMIN]))
+        {
+            $this->crud->denyAccess(['create', 'update', 'delete']);
+            $this->crud->allowAccess(['show', 'list']);
+        }
     }
 
     /**
@@ -39,6 +47,11 @@ class PostCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        Widget::add([
+                        'type'     => 'view',
+                        'view'     => 'vendor.backpack.ui.widgets.help_post_button',
+                        'section'  => 'before_content',
+                    ]);
         CRUD::column('id')->label('ID');
         CRUD::column('name')->label('Название')->searchLogic(
             function ($query, $column, $searchTerm) {

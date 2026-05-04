@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\Helper;
 use App\Http\Requests\TeamRequest;
 use App\Models\Team;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -28,8 +29,13 @@ class TeamCrudController extends CrudController
     public function setup()
     {
         CRUD::setModel(Team::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '');
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/commands');
         CRUD::setEntityNameStrings('команду', 'Команды');
+
+        $user = backpack_user();
+        if (!$user->hasRoles([Helper::ADMIN, Helper::SUPER_MANAGER])) {
+            abort(403, 'У вас нет прав для доступа к этому разделу.');
+        }
     }
 
     protected function setupShowOperation()

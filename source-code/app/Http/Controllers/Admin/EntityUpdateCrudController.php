@@ -1,0 +1,69 @@
+<?php
+
+
+namespace App\Http\Controllers\Admin;
+
+use App\Helpers\Helper;
+use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+
+/**
+ * Class EntityUpdateCrudController
+ * @package App\Http\Controllers\Admin
+ * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
+ */
+class EntityUpdateCrudController extends CrudController
+{
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+
+
+    /**
+     * Configure the CrudPanel object. Apply settings to all operations.
+     *
+     * @return void
+     */
+    public function setup()
+    {
+        CRUD::setModel(\App\Models\EntityUpdate::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/entities');
+        CRUD::setEntityNameStrings('', 'Логирование');
+
+        $user = backpack_user();
+        if (!$user->hasRoles([Helper::ADMIN])) {
+            abort(403, 'У вас нет прав для доступа к этому разделу.');
+        }
+    }
+
+    /**
+     * Define what happens when the List operation is loaded.
+     *
+     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
+     * @return void
+     */
+    protected function setupListOperation()
+    {
+        CRUD::column('id')->label('ID');
+        CRUD::column('name')->label('Название')->searchLogic(
+            function ($query, $column, $searchTerm) {
+                $query->orWhere('name', 'ilike', '%' . $searchTerm . '%');
+            }
+        );
+        CRUD::column('fio')->label('ФИО')->searchLogic(
+            function ($query, $column, $searchTerm) {
+                $query->orWhere('fio', 'ilike', '%' . $searchTerm . '%');
+            }
+        );
+        CRUD::column('type')->label('Тип сущности')->searchLogic(
+            function ($query, $column, $searchTerm) {
+                $query->orWhere('type', 'ilike', '%' . $searchTerm . '%');
+            }
+        );
+        CRUD::column('move')->label('Действие')->searchLogic(
+            function ($query, $column, $searchTerm) {
+                $query->orWhere('move', 'ilike', '%' . $searchTerm . '%');
+            }
+        );
+        CRUD::column('created_at')->label('Дата и время');
+    }
+}

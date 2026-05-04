@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\Helper;
 use App\Http\Requests\TaskRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\CRUD\app\Library\Widget;
 
 /**
  * Class TaskCrudController
@@ -27,8 +29,34 @@ class TaskCrudController extends CrudController
     public function setup()
     {
         CRUD::setModel(\App\Models\Task::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/tasks');
+        CRUD::setRoute(config('backpack.base.route_prefix') . '');
         CRUD::setEntityNameStrings('задачу', 'Задачи');
+    }
+
+    protected function setupShowOperation()
+    {
+        $this->setupListOperation();
+        CRUD::column('description')->label('Описание')->type('textarea');
+
+        CRUD::modifyColumn('name', ['label' => 'Название']);
+        CRUD::modifyColumn('date_create', ['label' => 'Дата создания']);
+        CRUD::modifyColumn('date_finish', ['label' => 'Дата завершения']);
+
+        CRUD::modifyColumn('executor_task', [
+            'label'     => 'Ответственный',
+            'type'      => 'select',
+            'entity'    => 'executor_task',
+            'attribute' => 'fio',
+            'model'     => "App\Models\Employee",
+        ]);
+
+        CRUD::modifyColumn('author_task', [
+            'label'     => 'Постановщик',
+            'type'      => 'select',
+            'entity'    => 'author_task',
+            'attribute' => 'fio',
+            'model'     => "App\Models\Employee",
+        ]);
     }
 
     /**
@@ -39,11 +67,25 @@ class TaskCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::addClause('whereHas', 'group', function ($query) {
-            $query->select('id')->whereHas('employee', function ($q) {
-                $q->where('employees.id',backpack_user()->id);
-            });
-        });
+        Widget::add([
+                        'type'     => 'view',
+                        'view'     => 'vendor.backpack.ui.widgets.help_button',
+                        'section'  => 'before_content',
+                    ]);
+        if (!backpack_user()->hasRoles([Helper::ADMIN, Helper::SUPER_MANAGER])) {
+            CRUD::addClause(
+                'whereHas',
+                'group',
+                function ($query) {
+                    $query->select('id')->whereHas(
+                        'employee',
+                        function ($q) {
+                            $q->where('employees.id', backpack_user()->id);
+                        }
+                    );
+                }
+            );
+        }
         CRUD::column('id')->label('ID');
         CRUD::column('name')->label('Название')->searchLogic(
             function ($query, $column, $searchTerm) {
@@ -133,4 +175,5 @@ class TaskCrudController extends CrudController
     {
         $this->setupCreateOperation();
     }
+
 }

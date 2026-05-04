@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Goat1000\SVGGraph\SVGGraph;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class Settlement extends Model
 {
@@ -26,6 +28,87 @@ class Settlement extends Model
 
     public $timestamps = false;
 
+    public static function getReport($startDate,$endDate){
+        $reportData = Settlement::query()
+            ->join('companies', 'settlements.company_id', '=', 'companies.id')
+            ->join('type_transactions', 'settlements.type_transaction_id', '=', 'type_transactions.id')
+            ->select(
+                'companies.name as company_name',
+                'type_transactions.name as status_name',
+                'type_transactions.id as status_id',
+                DB::raw('SUM(settlements.sum) as total_sum')
+            )
+            ->whereBetween('settlements.date_create', [$startDate, $endDate])
+            ->groupBy('companies.id', 'companies.name', 'type_transactions.id', 'type_transactions.name')
+            ->orderBy('companies.name')
+            ->get();
+
+             return [$reportData->sum('total_sum'),$reportData];
+    }
+
+    public static function formedChartData($data){
+       return $data->groupBy('company_name')->map(function ($items, $companyName) {
+           return [
+               'company' => $companyName,
+               'operations' => $items->map(function($item) {
+                   return [
+                       'name' => $item->status_name,
+                       'sum' => $item->total_sum,
+                       'id' => $item->status_id,
+                   ];
+               })
+           ];
+       })->toArray();
+    }
+
+    public static function generateCh($chartData){
+        $dataValues = [];
+        foreach ($chartData as $companyData) {
+            $operations = $companyData['operations'] ?? [];
+
+            foreach ($operations as $operation) {
+                $name = $operation['name'] ?? 'Другое';
+                $sum = (float)($operation['sum'] ?? 0);
+                if (!isset($dataValues[$name])) {
+                    $dataValues[$name] = 0;
+                }
+                $dataValues[$name] += $sum;
+            }
+        }
+
+        if (empty($dataValues)) {
+            return '';
+        }
+
+        $mainColours = ['#0000FF', '#CC0000'];
+        $defaultColour = '#D3D3D3';
+        $datasetColours = [];
+
+        $i = 0;
+        foreach ($dataValues as $statusName => $total) {
+            $datasetColours[] = $mainColours[$i] ?? $defaultColour;
+            $i++;
+        }
+
+        $settings = [
+            'auto_rescale'      => true,
+            'back_colour'       => '#ffffff',
+            'dataset_colours'   => $datasetColours,
+            'show_labels'       => true,
+            'label_font_size'   => 12,
+            'label_font_weight' => 'bold',
+            'label_colour'      => '#fff',
+            'inner_radius'      => 0.5,
+        ];
+
+        $graph = new \Goat1000\SVGGraph\SVGGraph(600, 400, $settings);
+        $graph->values($dataValues);
+
+        $svg = $graph->fetch('PieGraph');
+
+        return 'data:image/svg+xml;base64,' . base64_encode($svg);
+    }
+
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
@@ -43,7 +126,7 @@ class Settlement extends Model
 
     public function transaction(): BelongsTo
     {
-        return $this->belongsTo(TypeTransaction::class);
+        return $this->belongsTo(TypeTransaction::class,'type_transaction_id');
     }
 
     public function setDatetimeAttribute($value) {

@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\Helper;
 use App\Http\Requests\TypeTransactionRequest;
 use App\Http\Requests\VacationStatusRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -31,6 +32,11 @@ class VacationStatusCrudController extends CrudController
         CRUD::setModel(\App\Models\VacationStatus::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/vacation-statuses');
         CRUD::setEntityNameStrings('статус отпуска', 'Статусы отпуска');
+
+        $user = backpack_user();
+        if (!$user->hasRoles([Helper::ADMIN])) {
+            abort(403, 'У вас нет прав для доступа к этому разделу.');
+        }
     }
 
     /**

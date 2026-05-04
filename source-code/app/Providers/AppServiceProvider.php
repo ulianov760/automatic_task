@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Task;
+use App\Models\Vacation;
+use App\Observers\EntityUpdates;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Task::observe(EntityUpdates::class);
+        Vacation::observe(EntityUpdates::class);
     }
 }

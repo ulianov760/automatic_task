@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\Helper;
 use App\Http\Requests\StatusRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -29,6 +30,11 @@ class StatusCrudController extends CrudController
         CRUD::setModel(\App\Models\Status::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/statuses');
         CRUD::setEntityNameStrings('статус', 'Статусы');
+
+        $user = backpack_user();
+        if (!$user->hasRoles([Helper::ADMIN, Helper::SUPER_MANAGER])) {
+            abort(403, 'У вас нет прав для доступа к этому разделу.');
+        }
     }
 
     /**
