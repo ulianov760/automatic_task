@@ -85,24 +85,42 @@ class Settlement extends Model
         $datasetColours = [];
 
         $i = 0;
+        $data = [];
         foreach ($dataValues as $statusName => $total) {
             $datasetColours[] = $mainColours[$i] ?? $defaultColour;
             $i++;
+            $data[$statusName.': '.$total] = $total;
         }
 
         $settings = [
-            'auto_rescale'      => true,
-            'back_colour'       => '#ffffff',
-            'dataset_colours'   => $datasetColours,
-            'show_labels'       => true,
-            'label_font_size'   => 12,
-            'label_font_weight' => 'bold',
-            'label_colour'      => '#fff',
-            'inner_radius'      => 0.5,
+            'auto_rescale'     => true,
+            'back_colour'      => '#ffffff',
+            'back_stroke_width'  => 0,
+            'back_stroke_colour' => 'none',
+            'dataset_colours'  => $datasetColours,
+            'show_labels'      => false,
+            'show_legend'      => true,
+            'legend_shadow'    => false,
+            'legend_entries'   => array_keys($data),
+            'legend_position'  => 'outer bottom left',
+            'legend_stroke_width'     => 0,
+            'legend_stroke_colour'    => '#ffffff',
+            'legend_box_back_colour'  => '#ffffff',
+            'legend_shadow_thickness' => 0,
+            'legend_shadow_opacity'   => 0,
+            'legend_padding'   => 5,
+            'pad_left'         => 15,
+            'pad_right'        => 15,
+            'pad_top'          => 15,
+            'pad_bottom'       => 100,
+            'legend_font_size' => 11,
+            'legend_font_weight'=> 'bold',
+            'legend_text_colour'=> '#333333',
+            'inner_radius'     => 0.5,
         ];
 
         $graph = new \Goat1000\SVGGraph\SVGGraph(600, 400, $settings);
-        $graph->values($dataValues);
+        $graph->values($data);
 
         $svg = $graph->fetch('PieGraph');
 
